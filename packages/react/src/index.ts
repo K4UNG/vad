@@ -1,8 +1,8 @@
-import type { RealTimeVADOptions } from "@ricky0123/vad-web"
-import { MicVAD, defaultRealTimeVADOptions } from "@ricky0123/vad-web"
+import type { RealTimeVADOptions } from "@k4ung/vad-web"
+import { MicVAD, defaultRealTimeVADOptions } from "@k4ung/vad-web"
 import React, { useEffect, useReducer, useState } from "react"
 
-export { utils } from "@ricky0123/vad-web"
+export { utils } from "@k4ung/vad-web"
 
 interface ReactOptions {
   startOnLoad: boolean
@@ -80,37 +80,41 @@ export function useMicVAD(options: Partial<ReactRealTimeVADOptions>) {
   vadOptions.onVADMisfire = _onVADMisfire
 
   useEffect(() => {
-    const setup = async (): Promise<void> => {
-      let myvad: MicVAD | null
-      try {
-        myvad = await MicVAD.new(vadOptions)
-      } catch (e) {
-        setLoading(false)
-        if (e instanceof Error) {
-          setErrored({ message: e.message })
-        } else {
-          // @ts-ignore
-          setErrored({ message: e })
+    if (!vad) {
+      const setup = async (): Promise<void> => {
+        let myvad: MicVAD | null
+        try {
+          myvad = await MicVAD.new(vadOptions)
+        } catch (e) {
+          setLoading(false)
+          if (e instanceof Error) {
+            setErrored({ message: e.message })
+          } else {
+            // @ts-ignore
+            setErrored({ message: e })
+          }
+          return
         }
-        return
+        setVAD(myvad)
+        setLoading(false)
+        if (reactOptions.startOnLoad) {
+          myvad?.start()
+          setListening(true)
+        }
       }
-      setVAD(myvad)
-      setLoading(false)
-      if (reactOptions.startOnLoad) {
-        myvad?.start()
-        setListening(true)
-      }
+      setup().catch((e) => {
+        console.log("Well that didn't work")
+      })
     }
-    setup().catch((e) => {
-      console.log("Well that didn't work")
-    })
     return function cleanUp() {
       if (!loading && !errored) {
         vad?.pause()
         setListening(false)
+        vad?.destroy()
       }
     }
-  }, [])
+  }, [vad])
+
   const pause = () => {
     if (!loading && !errored) {
       vad?.pause()
@@ -130,6 +134,11 @@ export function useMicVAD(options: Partial<ReactRealTimeVADOptions>) {
       start()
     }
   }
+  const destroy = () => {
+    if (!loading && !errored) {
+      vad?.destroy()
+    }
+  }
   return {
     listening,
     errored,
@@ -138,6 +147,7 @@ export function useMicVAD(options: Partial<ReactRealTimeVADOptions>) {
     pause,
     start,
     toggle,
+    destroy,
   }
 }
 

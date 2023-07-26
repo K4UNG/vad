@@ -130,13 +130,24 @@ export class MicVAD {
     this.audioNodeVAD.start()
     this.listening = true
   }
+
+  destroy = () => {
+    if (this.listening) {
+      this.pause()
+    }
+    this.stream.getTracks().forEach((t) => t.stop())
+    this.audioContext.close()
+    this.audioNodeVAD.entryNode.port.postMessage({
+      message: Message.SpeechStop,
+    })
+  }
 }
 
 export class AudioNodeVAD {
   // @ts-ignore
   frameProcessor: FrameProcessor
   // @ts-ignore
-  entryNode: AudioNode
+  entryNode: AudioWorkletNode
 
   static async new(
     ctx: AudioContext,

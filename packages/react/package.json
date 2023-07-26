@@ -1,5 +1,5 @@
 {
-  "name": "@ricky0123/vad-react",
+  "name": "@k4ung/vad-react",
   "description": "Powerful, user-friendly, client-side voice activity detector (VAD) for React apps",
   "keywords": [
     "speech-recognition",
@@ -13,15 +13,15 @@
     "react"
   ],
   "homepage": "https://github.com/ricky0123/vad",
-  "version": "0.0.17",
+  "version": "0.0.6",
   "license": "ISC",
   "main": "dist/index.js",
   "devDependencies": {
     "@types/react": "^18.0.28"
   },
   "dependencies": {
-    "onnxruntime-web": "^1.14.0",
-    "@ricky0123/vad-web": "*"
+    "@k4ung/vad-web": "^0.0.3",
+    "onnxruntime-web": "^1.14.0"
   },
   "peerDependencies": {
     "react": "^18",
