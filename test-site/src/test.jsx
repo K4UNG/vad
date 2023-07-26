@@ -22,7 +22,7 @@ function Test() {
       <h6>Start/Pause</h6>
       <button onClick={vad.pause}>Pause</button>
       <button onClick={vad.start}>Start</button>
-      <button onClick={vad.destroy}>Destroy</button>
+      <button onClick={vad.stop}>Stop</button>
     </div>
   )
 }
